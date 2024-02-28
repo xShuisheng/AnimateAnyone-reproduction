@@ -203,7 +203,8 @@ def convert_list_bgra_to_rgba(image_list):
 if __name__ == "__main__":
     from tqdm import tqdm
     args = {
-        "pretrained_model_name_or_path": "SVD/svd_14",
+        # "pretrained_model_name_or_path": "checkpoint/SVD/svd_14",
+        "pretrained_model_name_or_path": "checkpoint",
         "validation_image_folder": "./testcase/81FyMPk-WIS/images",
         "validation_control_folder": "./testcase/81FyMPk-WIS/dwpose_woface",
         "output_dir": "./output",
@@ -218,12 +219,14 @@ if __name__ == "__main__":
     validation_control_images = load_images_from_folder_to_pil(args["validation_control_folder"], (args['width'], args['height']))
 
 
-    controlnet = ControlNetSDVModel.from_pretrained("/checkpoint/controlnet")
+    controlnet = ControlNetSDVModel.from_pretrained("checkpoint/controlnet")
     unet = UNetSpatioTemporalConditionControlNetModel.from_pretrained(args["pretrained_model_name_or_path"]+'/unet')
     
     pipeline = StableVideoDiffusionPipelineControlNet.from_pretrained(args["pretrained_model_name_or_path"], controlnet=controlnet, unet=unet)
     pipeline.to(dtype=torch.float16)
     pipeline.enable_model_cpu_offload()
+    
+    print('Model loading: DONE.')
 
     val_save_dir = os.path.join(args["output_dir"], "validation_images")
     os.makedirs(val_save_dir, exist_ok=True)
@@ -234,6 +237,8 @@ if __name__ == "__main__":
     ref_image = Image.open('./testcase/test_12.png').convert('RGB')
     frames = 14
     num_frames = len(validation_images)
+    
+    print('Image and frame data loading: DONE.')
 
     video_frames = pipeline(ref_image, validation_control_images[:num_frames], decode_chunk_size=2,num_frames=num_frames,motion_bucket_id=127.0, fps=7,controlnet_cond_scale=1.0, width=args['width'], height=args["height"], min_guidance_scale=3.5, max_guidance_scale=3.5, frames_per_batch=frames, num_inference_steps=25, overlap=4).frames[0]
     final_result.append(video_frames)

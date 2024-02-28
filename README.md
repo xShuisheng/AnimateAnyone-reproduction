@@ -1,6 +1,16 @@
 # animate-anyone-reproduction
 reproduction of AnimateAnyone using SVD
 
+
+### installation
+* download model and files from: https://modelscope.cn/models/lightnessly/animate-anyone-v1/files
+   * put files in 'controlnet' folder in the repo under 'checkpoint/controlnet' folder
+   * put files in 'unet' folder in the repo under 'checkpoint/unet' folder
+
+* clone (or download all files) the SVD model repo from: https://huggingface.co/stabilityai/stable-video-diffusion-img2vid-xt/tree/main
+  * put all file and folders(except 'controlnet' and 'unet') under 'checkpoint' folder
+
+
 ### To Do list
 - [x] piepline based on SVD
 - [x] train V0.9 which can only generate 14 frames per ref-image
